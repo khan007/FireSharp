@@ -7,11 +7,11 @@ namespace FireSharp.WebApp.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly IFirebaseClient _firebaseClient;
+        private readonly IFirebaseClient _client;
 
-        public HomeController(IFirebaseClient firebaseClient)
+        public HomeController(IFirebaseClient client)
         {
-            _firebaseClient = firebaseClient;
+            _client = client;
         }
 
         public ActionResult Index()
@@ -21,13 +21,35 @@ namespace FireSharp.WebApp.Controllers
 
         public async Task<RedirectToRouteResult> CallFirebase()
         {
-            await _firebaseClient.PushAsync("chat/", new
+            await _client.PushAsync("chat/", new
             {
                 name = "someone",
                 text = "Hello from backend :" + DateTime.Now.ToString("f")
             });
 
             return RedirectToAction("Index");
+        }
+
+        public ActionResult CallFirebaseSync()
+        {
+            _client.Push("chat/", new
+            {
+                name = "someone",
+                text = "Hello from backend :" + DateTime.Now.ToString("f")
+            });
+
+            return Content("hello");
+        }
+
+        public ActionResult CallFirebaseSync2()
+        {
+            _client.PushAsync("chat/", new
+            {
+                name = "someone",
+                text = "Hello from backend :" + DateTime.Now.ToString("f")
+            }).Wait();
+
+            return Content("hello");
         }
     }
 }

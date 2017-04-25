@@ -1,12 +1,13 @@
-﻿using FireSharp.Interfaces;
+﻿using System;
 
-namespace FireSharp.Config
+namespace FireSharp.Interfaces
 {
     public interface IFirebaseConfig
     {
         string BasePath { get; set; }
+        string Host { get; set; }
         string AuthSecret { get; set; }
-        int TimeoutInMinute { get; set; }
+        TimeSpan? RequestTimeout { get; set; }
         ISerializer Serializer { get; set; }
     }
 }

@@ -1,15 +1,11 @@
-﻿using System.Net.Http;
+﻿using System.Net;
 
 namespace FireSharp.Response
 {
     public class SetResponse : FirebaseResponse
     {
-        public SetResponse(HttpResponseMessage httpResponse)
-            : base(httpResponse)
-        {
-        }
-
-        public SetResponse()
+        public SetResponse(string body, HttpStatusCode statusCode)
+            : base(body, statusCode)
         {
         }
     }

@@ -1,25 +1,27 @@
-﻿using FireSharp.Config;
+﻿using System;
+using FireSharp.Config;
+using FireSharp.Interfaces;
 
 namespace FireSharp.Test.Console
 {
     public class Program
     {
-        protected const string BASE_PATH = "https://firesharp.firebaseio.com/";
-        protected const string FIREBASE_SECRET = "fubr9j2Kany9KU3SHCIHBLm142anWCzvlBs1D977";
+        protected const string BasePath = "https://firesharp.firebaseio.com/";
+        protected const string FirebaseSecret = "fubr9j2Kany9KU3SHCIHBLm142anWCzvlBs1D977";
         private static FirebaseClient _client;
 
         private static void Main()
         {
             IFirebaseConfig config = new FirebaseConfig
             {
-                AuthSecret = FIREBASE_SECRET,
-                BasePath = BASE_PATH
+                AuthSecret = FirebaseSecret,
+                BasePath = BasePath
             };
 
             _client = new FirebaseClient(config); //Uses JsonNet default
 
             EventStreaming();
-            Crud();
+            //Crud();
 
             System.Console.Read();
         }
@@ -32,7 +34,28 @@ namespace FireSharp.Test.Console
 
         private static async void EventStreaming()
         {
-            await _client.ListenAsync("chat", (sender, args) => { System.Console.WriteLine(args.Data); });
+            await _client.DeleteAsync("chat");
+
+            await _client.OnAsync("chat",
+                async (sender, args, context) =>
+                {
+                    System.Console.WriteLine(args.Data + "-> 1\n");
+                    await _client.PushAsync("chat/", new
+                    {
+                        name = "someone",
+                        text = "Console 1:" + DateTime.Now.ToString("f")
+                    });
+                },
+                (sender, args, context) => { System.Console.WriteLine(args.Data); },
+                (sender, args, context) => { System.Console.WriteLine(args.Path); });
+
+            var response = await _client.OnAsync("chat",
+                (sender, args, context) => { System.Console.WriteLine(args.Data + " -> 2\n"); },
+                (sender, args, context) => { System.Console.WriteLine(args.Data); },
+                (sender, args, context) => { System.Console.WriteLine(args.Path); });
+
+            //Call dispose to stop listening for events
+            //response.Dispose();
         }
     }
 }

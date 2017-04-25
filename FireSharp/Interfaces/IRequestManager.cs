@@ -4,13 +4,12 @@ using System.Threading.Tasks;
 
 namespace FireSharp.Interfaces
 {
-    internal interface IRequestManager :IDisposable
+    internal interface IRequestManager : IDisposable
     {
         Task<HttpResponseMessage> ListenAsync(string path);
-        Task<HttpResponseMessage> GetAsync(string path);
-        Task<HttpResponseMessage> PutAsync<T>(string path, T data);
-        Task<HttpResponseMessage> PostAsync<T>(string path, T data);
-        Task<HttpResponseMessage> DeleteAsync(string path);
-        Task<HttpResponseMessage> PatchAsync<T>(string path, T data);
+        Task<HttpResponseMessage> ListenAsync(string path, QueryBuilder queryBuilder);
+        Task<HttpResponseMessage> RequestAsync(HttpMethod method, string path, object payload = null);
+        Task<HttpResponseMessage> RequestAsync(HttpMethod method, string path, QueryBuilder queryBuilder, object payload = null);
+        Task<HttpResponseMessage> RequestApiAsync(HttpMethod method, string path, QueryBuilder queryBuilder, object payload = null);
     }
 }

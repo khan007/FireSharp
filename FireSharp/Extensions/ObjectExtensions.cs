@@ -1,33 +1,25 @@
-﻿using System.Net.Http;
-using FireSharp.Interfaces;
+﻿using FireSharp.Interfaces;
 
 namespace FireSharp.Extensions
 {
     public static class ObjectExtensions
     {
-        private static ISerializer _serializer;
-
         static ObjectExtensions()
         {
-            _serializer = new JsonSerializerWrapper();
+            Serializer = new JsonNetSerializer();
         }
 
-        public static ISerializer Serializer
-        {
-            get { return _serializer; }
-            set { _serializer = value; }
-        }
+        public static ISerializer Serializer { get; set; }
 
 
         public static string ToJson(this object @object)
         {
-            return _serializer.Serialize(@object);
+            return Serializer.Serialize(@object);
         }
 
-        public static T ReadAs<T>(this HttpResponseMessage response)
+        public static T ReadAs<T>(this string content)
         {
-            var task = response.Content.ReadAsStringAsync();
-            return _serializer.Deserialize<T>(task.Result);
+            return Serializer.Deserialize<T>(content);
         }
     }
 }
